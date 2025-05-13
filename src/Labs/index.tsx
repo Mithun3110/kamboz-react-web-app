@@ -6,6 +6,9 @@ import Lab3 from "./Lab3";
 export default function Labs() {
   return (
     <div>
+      <h3>Mithun Dineshkumar </h3>
+      <h4>Section - 04</h4>
+      <h4>NUID : 002326747</h4>
       <h1>Labs</h1>
       <TOC />
       <Routes>
