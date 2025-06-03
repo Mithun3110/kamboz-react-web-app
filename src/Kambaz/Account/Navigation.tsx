@@ -13,9 +13,9 @@ export default function AccountNavigation() {
       <Link to="/Kambaz/Account/Signup" className="text-danger d-block mb-2">
         Signup
       </Link>
-      <Link to="/Kambaz/Account/Profile" className="text-danger d-block">
+      {/* <Link to="/Kambaz/Account/Profile" className="text-danger d-block">
         Profile
-      </Link>
+      </Link> */}
     </div>
   );
 }

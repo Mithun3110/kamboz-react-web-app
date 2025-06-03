@@ -7,10 +7,9 @@ import { BsGripVertical } from "react-icons/bs";
 import { MdAssignment } from "react-icons/md";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../../store"; // adjust path to your store file
+import type { RootState } from "../../store";
 import { deleteAssignment } from "./reducer";
-import type { Assignment } from "./types"; // define a type for assignment
- // define a type for assignment
+import type { Assignment } from "./types";
 
 export default function Assignments() {
   const { cid } = useParams<{ cid: string }>();
@@ -22,7 +21,10 @@ export default function Assignments() {
   );
 
   const handleDelete = (id: string) => {
-    dispatch(deleteAssignment(id));
+    const confirmed = window.confirm("Are you sure you want to delete this assignment?");
+    if (confirmed) {
+      dispatch(deleteAssignment(id));
+    }
   };
 
   return (
