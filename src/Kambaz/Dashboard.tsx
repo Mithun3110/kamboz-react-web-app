@@ -8,6 +8,7 @@ import {
   editCourse,
 } from "./Courses/reducer";
 import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import type { ChangeEvent } from "react";
 
 interface Course {
@@ -71,7 +72,22 @@ export default function Dashboard() {
   const defaultImageUrl = "/images/reactjs.jpg";
 
   const handleAddNewCourse = () => {
-    dispatch(addCourse(editingCourse));
+    const newCourseId = uuidv4();
+    const newCourse: Course = {
+      ...editingCourse,
+      _id: newCourseId,
+    };
+
+    dispatch(addCourse(newCourse));
+
+    dispatch({
+      type: "enrollment/toggleEnrollment",
+      payload: {
+        userId: currentUser!._id,
+        courseId: newCourseId,
+      },
+    });
+
     setEditingCourse({ name: "", description: "" });
   };
 

@@ -18,7 +18,7 @@ interface CoursesState {
 }
 
 const initialState: CoursesState = {
-  courses: initialCourses,
+  courses: initialCourses as Course[], // ✅ added type assertion
 };
 
 const coursesSlice = createSlice({
