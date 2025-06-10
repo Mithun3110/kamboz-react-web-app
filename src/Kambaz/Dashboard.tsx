@@ -222,7 +222,7 @@ export default function Dashboard() {
                     >
                       Go
                     </Button>
-                    {isFaculty && (
+                    {isFaculty ? (
                       <div>
                         <Button
                           variant="warning"
@@ -240,9 +240,7 @@ export default function Dashboard() {
                           Delete
                         </Button>
                       </div>
-                    )}
-
-                    {!isFaculty && (
+                    ) : (
                       <Button
                         variant={isEnrolled ? "danger" : "success"}
                         size="sm"
