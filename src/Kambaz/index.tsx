@@ -28,7 +28,6 @@ export default function Kambaz() {
 
   const findCoursesForUser = async () => {
     try {
-      // Using findMyCourses from the account client
       const courses = await userClient.findMyCourses();
       setCourses(courses);
     } catch (error) {
@@ -55,8 +54,6 @@ export default function Kambaz() {
   };
 
   const updateEnrollment = async (courseId: string, enrolled: boolean) => {
-    // Note: The enrollment/unenrollment functionality would need to be implemented
-    // in your backend and client. For now, just updating the local state
     setCourses(
       courses.map((course) => {
         if (course._id === courseId) {
@@ -70,7 +67,6 @@ export default function Kambaz() {
 
   const addCourse = async () => {
     try {
-      // Using createCourse from the account client (creates course for current user)
       const newCourse = await userClient.createCourse(course);
       setCourses([...courses, newCourse]);
     } catch (error) {

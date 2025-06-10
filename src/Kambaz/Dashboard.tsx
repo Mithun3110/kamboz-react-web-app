@@ -24,8 +24,6 @@ export default function Dashboard({
   updateEnrollment: (courseId: string, enrolled: boolean) => void;
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
-  // const { enrollments } = useSelector((state: any) => state.enrollmentReducer);
-
   const isFaculty = currentUser.role === "FACULTY";
 
   return (
@@ -72,22 +70,19 @@ export default function Dashboard({
         <h2 id="wd-dashboard-published">
           Published Courses ({courses.length})
         </h2>
-        <button
-          onClick={() => setEnrolling(!enrolling)}
-          className="float-end btn btn-primary"
-        >
-          {enrolling ? "My Courses" : "All Courses"}
-        </button>{" "}
+        {!isFaculty && (
+          <button
+            onClick={() => setEnrolling(!enrolling)}
+            className="float-end btn btn-primary"
+          >
+            {enrolling ? "My Courses" : "All Courses"}
+          </button>
+        )}
       </div>
       <hr />
       <div id="wd-dashboard-courses">
         <Row xs={1} md={5} className="g-4">
           {courses.map((course) => {
-            // const isEnrolled = enrollments.some(
-            //   (enrollment: any) =>
-            //     enrollment.user === currentUser._id &&
-            //     enrollment.course === course._id
-            // );
             return (
               <Col
                 key={course._id}
@@ -112,7 +107,7 @@ export default function Dashboard({
                     />
                     <Card.Body style={{ flexGrow: 1 }}>
                       <Card.Title className="wd-dashboard-course-title">
-                        {enrolling && (
+                        {!isFaculty && enrolling && (
                           <button
                             onClick={(event) => {
                               event.preventDefault();
