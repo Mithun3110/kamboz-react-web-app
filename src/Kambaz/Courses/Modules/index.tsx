@@ -22,6 +22,33 @@ export default function Modules() {
 
   const { modules } = useSelector((state: any) => state.modulesReducer);
   const dispatch = useDispatch();
+  const addModuleHandler = async () => {
+   const newModule = await coursesClient.createModuleForCourse(cid!, {
+     name: moduleName,
+     course: cid,
+   });
+   dispatch(addModule(newModule));
+   setModuleName("");
+ };
+ const deleteModuleHandler = async (moduleId: string) => {
+   await modulesClient.deleteModule(moduleId);
+   dispatch(deleteModule(moduleId));
+ };
+ const updateModuleHandler = async (module: any) => {
+   await modulesClient.updateModule(module);
+   dispatch(updateModule(module));
+ };
+
+
+
+  const fetchModulesForCourse = async () => {
+  const modules = await coursesClient.findModulesForCourse(cid!);
+    dispatch(setModules(modules));
+    };
+    useEffect(() => {
+      fetchModulesForCourse();
+    }, [cid]);
+
   const createModuleForCourse = async () => {
     if (!cid) return;
     const newModule = { name: moduleName, course: cid };
@@ -50,7 +77,11 @@ export default function Modules() {
 
   return (
     <div>
-      <ModulesControls setModuleName={setModuleName} moduleName={moduleName} addModule={createModuleForCourse} />
+      <ModulesControls
+       addModule={addModuleHandler}
+       moduleName={moduleName}
+       setModuleName={setModuleName}
+     />
       <br /><br /><br /><br />
       <ListGroup id="wd-modules" className="rounded-0">
         {modules
@@ -63,24 +94,18 @@ export default function Modules() {
                 <BsGripVertical className="me-2 fs-3" />
                 {!module.editing && module.name}
                 {module.editing && (
-                  <FormControl
-                    className="w-50 d-inline-block"
-                    onChange={(e) =>
-                      dispatch(
-                        updateModule({ ...module, name: e.target.value })
-                      )
-                    }
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                         saveModule({ ...module, editing: false });
-                      }
-                    }}
-                    defaultValue={module.name}
-                  />
-                )}
+                  <input onChange={(e) =>
+                            updateModuleHandler({ ...module, name: e.target.value }) }
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              updateModuleHandler({ ...module, editing: false });
+                            }
+                          }}
+                          value={module.name}/>
+                  )}
                 <ModuleControlButtons
                   moduleId={module._id}
-                  deleteModule={(moduleId) => removeModule(moduleId)}
+                  deleteModule={(moduleId) => deleteModuleHandler(moduleId)}
                   editModule={() => dispatch(editModule(module._id))}
                 />
               </div>

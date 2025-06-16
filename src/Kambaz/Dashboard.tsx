@@ -19,7 +19,7 @@ export default function Dashboard({
   addCourse: () => void;
   deleteCourse: (course: any) => void;
   updateCourse: () => void;
-  enrolling: boolean;
+  enrolling: boolean; 
   setEnrolling: (enrolling: boolean) => void;
   updateEnrollment: (courseId: string, enrolled: boolean) => void;
 }) {
@@ -28,7 +28,11 @@ export default function Dashboard({
 
   return (
     <div id="wd-dashboard">
-      <h1 id="wd-dashboard-title">Dashboard</h1>
+      <h1 id="wd-dashboard-title">Dashboard
+        <button onClick={() => setEnrolling(!enrolling)} className="float-end btn btn-primary" >
+          {enrolling ? "My Courses" : "All Courses"}
+        </button>
+      </h1>
 
       <hr />
       {isFaculty && (
@@ -107,6 +111,14 @@ export default function Dashboard({
                     />
                     <Card.Body style={{ flexGrow: 1 }}>
                       <Card.Title className="wd-dashboard-course-title">
+                        {enrolling && (
+              <button  onClick={(event) => {
+                        event.preventDefault();
+                        updateEnrollment(course._id, !course.enrolled);
+                      }}className={`btn ${ course.enrolled ? "btn-danger" : "btn-success" } float-end`} >
+                {course.enrolled ? "Unenroll" : "Enroll"}
+              </button>
+            )}
                         {!isFaculty && enrolling && (
                           <button
                             onClick={(event) => {
