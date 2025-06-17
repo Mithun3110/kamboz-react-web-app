@@ -12,39 +12,11 @@ import Session from "./Account/Session";
 import * as courseClient from "./Courses/client";
 import * as userClient from "./Account/client";
 
-
 export default function Kambaz() {
   const [courses, setCourses] = useState<any[]>([]);
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const [enrolling, setEnrolling] = useState<boolean>(false);
- const findCoursesForUser = async () => {
-   try {
-     const courses = await userClient.findCoursesForUser(currentUser._id);
-     setCourses(courses);
-   } catch (error) {
-     console.error(error);
-   }
- };
- const fetchCourses = async () => {
-   try {
-     const allCourses = await courseClient.fetchAllCourses();
-     const enrolledCourses = await userClient.findCoursesForUser(
-       currentUser._id
-     );
-     const courses = allCourses.map((course: any) => {
-       if (enrolledCourses.find((c: any) => c._id === course._id)) {
-         return { ...course, enrolled: true };
-       } else {
-         return course;
-       }
-     });
-     setCourses(courses);
-   } catch (error) {
-     console.error(error);
-   }
- };
 
-  
   const [course, setCourse] = useState<any>({
     _id: "1234",
     name: "New Course",
@@ -54,28 +26,61 @@ export default function Kambaz() {
     description: "New Description",
   });
 
-  const updateEnrollment = async (courseId: string, enrolled: boolean) => {
-   if (enrolled) {
-     await userClient.enrollIntoCourse(currentUser._id, courseId);
-   } else {
-     await userClient.unenrollFromCourse(currentUser._id, courseId);
-   }
-   setCourses(
-     courses.map((course) => {
-       if (course._id === courseId) {
-         return { ...course, enrolled: enrolled };
-       } else {
-         return course;
-       }
-     })
-   );
- };
+  const findCoursesForUser = async () => {
+    try {
+      const userCoursesRaw = await userClient.findCoursesForUser(currentUser._id);
+      const userCourses = userCoursesRaw.filter((c: any) => c && c._id);
+      setCourses(userCourses);
+    } catch (error) {
+      console.error("Error fetching user's courses:", error);
+    }
+  };
 
+  const fetchCourses = async () => {
+    try {
+      const allCoursesRaw = await courseClient.fetchAllCourses();
+      const enrolledCoursesRaw = await userClient.findCoursesForUser(currentUser._id);
+
+      const allCourses = allCoursesRaw.filter((c: any) => c && c._id);
+      const enrolledCourses = enrolledCoursesRaw.filter((c: any) => c && c._id);
+
+      const updatedCourses = allCourses.map((course: any) => {
+        const isEnrolled = enrolledCourses.some((c: any) => c._id === course._id);
+        return { ...course, enrolled: isEnrolled };
+      });
+
+      setCourses(updatedCourses);
+    } catch (error) {
+      console.error("Error fetching all courses:", error);
+    }
+  };
+
+  const updateEnrollment = async (courseId: string, enrolled: boolean) => {
+    try {
+      if (enrolled) {
+        await userClient.enrollIntoCourse(currentUser._id, courseId);
+      } else {
+        await userClient.unenrollFromCourse(currentUser._id, courseId);
+      }
+
+      setCourses(
+        courses.map((course) =>
+          course._id === courseId ? { ...course, enrolled } : course
+        )
+      );
+    } catch (error) {
+      console.error("Error updating enrollment:", error);
+    }
+  };
 
   const addCourse = async () => {
     try {
       const newCourse = await courseClient.createCourse(course);
-      setCourses([...courses, newCourse]);
+      if (newCourse && newCourse._id) {
+        setCourses([...courses, newCourse]);
+      } else {
+        console.warn("Invalid course returned from server:", newCourse);
+      }
     } catch (error) {
       console.error("Error adding course:", error);
     }
@@ -94,13 +99,7 @@ export default function Kambaz() {
     try {
       await courseClient.updateCourse(course);
       setCourses(
-        courses.map((c) => {
-          if (c._id === course._id) {
-            return course;
-          } else {
-            return c;
-          }
-        })
+        courses.map((c) => (c._id === course._id ? course : c))
       );
     } catch (error) {
       console.error("Error updating course:", error);
@@ -108,12 +107,12 @@ export default function Kambaz() {
   };
 
   useEffect(() => {
-   if (enrolling) {
-     fetchCourses();
-   } else {
-     findCoursesForUser();
-   }
- }, [currentUser, enrolling]);
+    if (enrolling) {
+      fetchCourses();
+    } else {
+      findCoursesForUser();
+    }
+  }, [currentUser, enrolling]);
 
   return (
     <Session>
@@ -134,7 +133,7 @@ export default function Kambaz() {
                     addCourse={addCourse}
                     deleteCourse={deleteCourse}
                     updateCourse={updateCourse}
-                    enrolling={enrolling} 
+                    enrolling={enrolling}
                     setEnrolling={setEnrolling}
                     updateEnrollment={updateEnrollment}
                   />

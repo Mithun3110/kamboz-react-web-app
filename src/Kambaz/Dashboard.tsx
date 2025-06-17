@@ -25,7 +25,7 @@ export default function Dashboard({
 }) {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
   const isFaculty = currentUser.role === "FACULTY";
-
+  console.log(courses);
   return (
     <div id="wd-dashboard">
       <h1 id="wd-dashboard-title">Dashboard
@@ -74,14 +74,14 @@ export default function Dashboard({
         <h2 id="wd-dashboard-published">
           Published Courses ({courses.length})
         </h2>
-        {!isFaculty && (
+        {/* {!isFaculty && (
           <button
             onClick={() => setEnrolling(!enrolling)}
             className="float-end btn btn-primary"
           >
             {enrolling ? "My Courses" : "All Courses"}
           </button>
-        )}
+        )} */}
       </div>
       <hr />
       <div id="wd-dashboard-courses">
@@ -119,7 +119,7 @@ export default function Dashboard({
                 {course.enrolled ? "Unenroll" : "Enroll"}
               </button>
             )}
-                        {!isFaculty && enrolling && (
+                        {/* {!isFaculty && enrolling && (
                           <button
                             onClick={(event) => {
                               event.preventDefault();
@@ -131,7 +131,7 @@ export default function Dashboard({
                           >
                             {course.enrolled ? "Unenroll" : "Enroll"}
                           </button>
-                        )}
+                        )} */}
                         {course.name}
                       </Card.Title>
                       <Card.Text
